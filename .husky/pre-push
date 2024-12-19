@@ -1,7 +1,5 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-BRANCH_PATTERN="^(feature|fix|hotfix)\/[a-z0-9-_]+$"
+#!/bin/bash
+BRANCH_PATTERN="^(feature|fix|hotfix)/[a-zA-Z0-9-]+$"
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 if ! [[ "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
@@ -10,4 +8,4 @@ if ! [[ "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
   exit 1
 fi
 
-echo "✅ Branch name is valid!"
+# echo "✅ Branch name is valid!"

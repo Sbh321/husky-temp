@@ -1,13 +1,26 @@
 #!/bin/bash
 BRANCH_PATTERN="^(feature|fix|hotfix)/[a-zA-Z0-9-]+$"
 EXCEPTIONS=("main" "master")  # Add other exceptions if needed
-BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-# Check if the branch name is in exceptions or follows the pattern
-if [[ ! " ${EXCEPTIONS[@]} " =~ " ${BRANCH_NAME} " && ! "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
-  echo "🚫 Invalid branch name: '$BRANCH_NAME'"
-  echo "Branch names must follow the pattern: 'feature/<description>', 'fix/<description>', or 'hotfix/<description>'."
-  exit 1
-fi
+# Read branch information from stdin
+while read -r local_ref local_sha remote_ref remote_sha; do
+  BRANCH_NAME=$(git rev-parse --abbrev-ref "${local_ref#refs/heads/}")
 
-# echo "✅ Branch name is valid!"
+  # Check if the branch name is an exception
+  is_exception=false
+  for exception in "${EXCEPTIONS[@]}"; do
+    if [[ "$BRANCH_NAME" == "$exception" ]]; then
+      is_exception=true
+      break
+    fi
+  done
+
+  # Validate branch name
+  if [[ "$is_exception" != true && ! "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
+    echo "🚫 Invalid branch name: '$BRANCH_NAME'"
+    echo "Branch names must follow the pattern: 'feature/<description>', 'fix/<description>', or 'hotfix/<description>'."
+    exit 1
+  fi
+done
+
+echo "✅ Branch name is valid!"

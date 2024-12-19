@@ -1,8 +1,10 @@
 #!/bin/bash
 BRANCH_PATTERN="^(feature|fix|hotfix)/[a-zA-Z0-9-]+$"
+EXCEPTIONS=("main" "master")  # Add other exceptions if needed
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-if ! [[ "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
+# Check if the branch name is in exceptions or follows the pattern
+if [[ ! " ${EXCEPTIONS[@]} " =~ " ${BRANCH_NAME} " && ! "$BRANCH_NAME" =~ $BRANCH_PATTERN ]]; then
   echo "🚫 Invalid branch name: '$BRANCH_NAME'"
   echo "Branch names must follow the pattern: 'feature/<description>', 'fix/<description>', or 'hotfix/<description>'."
   exit 1
